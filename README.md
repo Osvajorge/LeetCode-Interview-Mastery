@@ -21,7 +21,7 @@ This repository contains **comprehensive solutions** to coding interview problem
 ### 🗃️ **Database & SQL Engineering**
 | Collection | Problems | Difficulty | Progress | Focus Area |
 |-----------|----------|------------|----------|------------|
-| [**SQL50**](./SQL50/) | 50 | Easy-Hard | ![Progress](https://img.shields.io/badge/Progress-0%25-red) | Database Design, Query Optimization |
+| [**SQL50**](./SQL50/) | 50 | Easy-Hard | ![Progress](https://img.shields.io/badge/Progress-8%25-red) | Database Design, Query Optimization |
 
 ### 🧮 **Coming Soon: Algorithms & Data Structures**  
 | Collection | Problems | Difficulty | Status | Focus Area |
@@ -37,15 +37,6 @@ This repository contains **comprehensive solutions** to coding interview problem
 - **SQL**: MySQL, Standard ANSI SQL
 - **Python**: 3.8+ with pandas, numpy
 - **Documentation**: Comprehensive markdown explanations
-
-
-## 🚀 Quick Start
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/Osvajorge/LeetCode-Interview-Mastery.git
-cd LeetCode-Interview-Mastery
-```
 
 ## 🎯 Repository Roadmap
 
