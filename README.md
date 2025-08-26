@@ -1,8 +1,8 @@
 # 🚀 LeetCode Interview Mastery
 
-[![SQL](https://img.shields.io/badge/SQL-Expert-blue)](https://github.com/Osvajorge)
-[![Python](https://img.shields.io/badge/Python-Advanced-green)](https://github.com/Osvajorge)
-[![Pandas](https://img.shields.io/badge/Pandas-Proficient-orange)](https://github.com/Osvajorge)
+[![SQL](https://img.shields.io/badge/SQL-blue)](https://github.com/Osvajorge)
+[![Python](https://img.shields.io/badge/Python-green)](https://github.com/Osvajorge)
+[![Pandas](https://img.shields.io/badge/Pandas-orange)](https://github.com/Osvajorge)
 
 > **Comprehensive technical interview preparation repository, starting with SQL mastery and expanding to algorithms & data structures.**
 
