@@ -14,7 +14,7 @@ Complete collection of essential SQL problems for interview preparation.
 | 6 | [Subqueries](./06-Subqueries/) | 8 | 0/8 |
 | 7 | [String Functions](./07-Advanced-String-Functions/) | 7 | 0/7 |
 
-## Progress: 3/50
+## Progress: 4/50 ![Progress](https://img.shields.io/badge/Progress-8%25-red) 
 
 Each problem contains:
 - Standard SQL solution
