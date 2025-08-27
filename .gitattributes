@@ -1,0 +1,5 @@
+# Force GitHub to detect SQL files properly
+*.sql linguist-language=SQL
+
+# Ensure Python files are detected correctly  
+*.py linguist-language=Python
