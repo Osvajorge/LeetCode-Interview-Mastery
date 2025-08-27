@@ -5,6 +5,7 @@ Complete collection of essential SQL problems for interview preparation.
 ## Categories
 
 | # | Category | Problems | Status |
+|---|----------|----------|--------|
 | 1 | [Select](./01-Select/) | 5 | 5/5 |
 | 2 | [Basic Joins](./02-Basic-Joins/) | 6 | 1/6 |
 | 3 | [Aggregate Functions](./03-Basic-Aggregate-Functions/) | 7 | 0/7 |
