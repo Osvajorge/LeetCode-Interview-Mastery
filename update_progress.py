@@ -125,22 +125,46 @@ def update_sql50_readme(progress_data: Dict) -> bool:
     with open(readme_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
-    # Build the new table
-    table_rows = []
-    for i, (category_dir, data) in enumerate(progress_data.items(), 1):
-        if category_dir == "_totals":
-            continue
-        
-        category_link = f"[{data['name']}](./{category_dir}/)"
-        status = f"{data['completed']}/{data['total']}"
-        table_rows.append(f"| {i} | {category_link} | {data['total']} | {status} |")
+    # Build the new table with proper formatting
+    table_header = "| # | Category | Problems | Status |\n|---|----------|----------|--------|"
+    table_rows = [table_header]
+    
+    # Ensure we process categories in the right order
+    category_order = [
+        ("01-Select", "Select"),
+        ("02-Basic-Joins", "Basic Joins"), 
+        ("03-Basic-Aggregate-Functions", "Aggregate Functions"),
+        ("04-Sorting-and-Grouping", "Sorting & Grouping"),
+        ("05-Advanced-Select-and-Joins", "Advanced Joins"),
+        ("06-Subqueries", "Subqueries"),
+        ("07-Advanced-String-Functions", "String Functions")
+    ]
+    
+    for i, (category_dir, display_name) in enumerate(category_order, 1):
+        if category_dir in progress_data:
+            data = progress_data[category_dir]
+            category_link = f"[{display_name}](./{category_dir}/)"
+            status = f"{data['completed']}/{data['total']}"
+            table_rows.append(f"| {i} | {category_link} | {data['total']} | {status} |")
     
     new_table = "\n".join(table_rows)
     
-    # Replace the categories table
-    table_pattern = r'(\| # \| Category \| Problems \| Status \|\n\|---|----------|----------|--------\|\n).*?(?=\n\n## Progress:)'
-    replacement = f'\\g<1>{new_table}'
-    content = re.sub(table_pattern, replacement, content, flags=re.DOTALL)
+    # Replace the entire table section more precisely  
+    # Look for the table start and replace until the Progress section
+    table_start = "| # | Category | Problems | Status |"
+    progress_start = "## Progress:"
+    
+    # Find table start and progress start positions
+    table_start_pos = content.find(table_start)
+    progress_start_pos = content.find(progress_start)
+    
+    if table_start_pos != -1 and progress_start_pos != -1:
+        # Replace the table section
+        before_table = content[:table_start_pos]
+        after_progress = content[progress_start_pos:]
+        content = before_table + new_table + "\n\n" + after_progress
+    else:
+        print("⚠️  Could not find table boundaries in SQL50/README.md")
     
     # Update progress summary
     totals = progress_data["_totals"]
