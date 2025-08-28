@@ -21,7 +21,7 @@ This repository contains **comprehensive solutions** to coding interview problem
 ### 🗃️ **Database & SQL Engineering**
 | Collection | Problems | Difficulty | Progress | Focus Area |
 |-----------|----------|------------|----------|------------|
-| [**SQL50**](./SQL50/) | 50 | Easy-Hard | ![Progress](https://img.shields.io/badge/Progress-14%25-red) | Database Design, Query Optimization |
+| [**SQL50**](./SQL50/) | 50 | Easy-Hard | ![Progress](https://img.shields.io/badge/Progress-16%25-red) | Database Design, Query Optimization |
 
 ### 🧮 **Coming Soon: Algorithms & Data Structures**  
 | Collection | Problems | Difficulty | Status | Focus Area |
@@ -29,7 +29,7 @@ This repository contains **comprehensive solutions** to coding interview problem
 | **NeetCode 150** | 150 | Easy-Hard | 🔮 Planned | Core CS Fundamentals |
 | **Blind 75** | 75 | Easy-Hard | 🔮 Planned | Most Asked Problems |
 
-**Total Progress: 7/50 problems (14%)** 🎯 *Building momentum!**Building momentum!**Building momentum!**Just getting started!*
+**Total Progress: 8/50 problems (16%)** 🎯 *Building momentum!**Building momentum!**Building momentum!**Building momentum!**Just getting started!*
 
 ## 🛠️ Tech Stack
 
