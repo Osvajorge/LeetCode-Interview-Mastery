@@ -29,7 +29,7 @@ This repository contains **comprehensive solutions** to coding interview problem
 | **NeetCode 150** | 150 | Easy-Hard | 🔮 Planned | Core CS Fundamentals |
 | **Blind 75** | 75 | Easy-Hard | 🔮 Planned | Most Asked Problems |
 
-**Total Progress: 10/51 problems (19%)** 🎯 *Building momentum!**Building momentum!**Building momentum!**Building momentum!**Building momentum!**Building momentum!**Just getting started!*
+**Total Progress: 11/51 problems (21%)** 🎯 *Building momentum!**Building momentum!**Building momentum!**Building momentum!**Building momentum!**Building momentum!**Just getting started!*
 
 ## 🛠️ Tech Stack
 
