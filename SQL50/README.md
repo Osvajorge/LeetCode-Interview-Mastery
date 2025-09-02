@@ -4,34 +4,19 @@ Complete collection of essential SQL problems for interview preparation, organiz
 
 ## 📊 Progress Overview
 
-**Total Progress: 11/51 problems (21%)**
+**Total Progress: 11/50 problems (22%)**
 
 ## 🗂️ Categories
 
 | # | Category | Problems | Status | Progress |
-|---|----------|----------|--------|----------|
+|:---:|:---|:---:|:---:|:---:|
 | 1 | [Select](#01-select) | 5 | ✅ 5/5 | 100% |
 | 2 | [Basic Joins](#02-basic-joins) | 9 | 🚧 6/9 | 66% |
 | 3 | [Basic Aggregate Functions](#03-basic-aggregate-functions) | 8 | ⏳ 0/8 | 0% |
 | 4 | [Sorting and Grouping](#04-sorting-and-grouping) | 7 | ⏳ 0/7 | 0% |
 | 5 | [Advanced Select and Joins](#05-advanced-select-and-joins) | 7 | ⏳ 0/7 | 0% |
 | 6 | [Subqueries](#06-subqueries) | 7 | ⏳ 0/7 | 0% |
-| 7 | [Advanced String Functions](#07-advanced-string-functions) | 8 | ⏳ 0/8 | 0% |
-
----
-
----|----------|----------|--------|----------|
-| 1 | [Select](#01-select) | 5 | ✅ 5/5 | 100% |
-| 2 | [Basic Joins](#02-basic-joins) | 9 | 🚧 5/9 | 56% |
-| 3 | [Basic Aggregate Functions](#03-basic-aggregate-functions) | 8 | ⏳ 0/8 | 0% |
-| 4 | [Sorting and Grouping](#04-sorting-and-grouping) | 7 | ⏳ 0/7 | 0% |
-| 5 | [Advanced Select and Joins](#05-advanced-select-and-joins) | 7 | ⏳ 0/7 | 0% |
-| 6 | [Subqueries](#06-subqueries) | 7 | ⏳ 0/7 | 0% |
-| 7 | [Advanced String Functions](#07-advanced-string-functions) | 8 | ⏳ 0/8 | 0% |
-
----
-
-## 📚 Solution Structure
+| 7 | [Advanced String Functions](#07-advanced-string-functions) | 7 | ⏳ 0/7 | 0% |## 📚 Solution Structure
 
 Each problem contains:
 - **`README.md`** - Problem description, examples, approach explanation
