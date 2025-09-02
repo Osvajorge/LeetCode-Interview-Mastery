@@ -1,40 +1,28 @@
 #!/usr/bin/env python3
-"""
-Enhanced progress tracking script for LeetCode Interview Mastery repository
-Updates both main README.md and SQL50/README.md with current progress
-Usage: python update_progress.py
-"""
-
 import os
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple, NamedTuple
+from typing import Dict, List, NamedTuple
 
 class CategoryStats(NamedTuple):
     name: str
     total_problems: int
     completed_problems: int
-    easy_total: int
-    medium_total: int
-    hard_total: int
-    easy_completed: int
-    medium_completed: int
-    hard_completed: int
 
 class ProgressTracker:
     def __init__(self):
         self.root_path = Path.cwd()
         self.sql50_path = self.root_path / "SQL50"
         
-        # Category definitions with correct problem counts from your structure
+        # Category definitions with correct problem counts
         self.categories = {
-            "01-Select": {"name": "Select", "total": 5, "easy": 5, "medium": 0, "hard": 0},
-            "02-Basic-Joins": {"name": "Basic Joins", "total": 9, "easy": 7, "medium": 2, "hard": 0},
-            "03-Basic-Aggregate-Functions": {"name": "Basic Aggregate Functions", "total": 8, "easy": 5, "medium": 3, "hard": 0},
-            "04-Sorting-and-Grouping": {"name": "Sorting and Grouping", "total": 7, "easy": 5, "medium": 2, "hard": 0},
-            "05-Advanced-Select-and-Joins": {"name": "Advanced Select and Joins", "total": 7, "easy": 3, "medium": 4, "hard": 0},
-            "06-Subqueries": {"name": "Subqueries", "total": 7, "easy": 1, "medium": 5, "hard": 1},
-            "07-Advanced-String-Functions": {"name": "Advanced String Functions", "total": 8, "easy": 6, "medium": 1, "hard": 0}
+            "01-Select": {"name": "Select", "total": 5},
+            "02-Basic-Joins": {"name": "Basic Joins", "total": 9},
+            "03-Basic-Aggregate-Functions": {"name": "Basic Aggregate Functions", "total": 8},
+            "04-Sorting-and-Grouping": {"name": "Sorting and Grouping", "total": 7},
+            "05-Advanced-Select-and-Joins": {"name": "Advanced Select and Joins", "total": 7},
+            "06-Subqueries": {"name": "Subqueries", "total": 7},
+            "07-Advanced-String-Functions": {"name": "Advanced String Functions", "total": 8}
         }
 
     def scan_directory_for_problems(self) -> Dict[str, List[str]]:
@@ -65,29 +53,10 @@ class ProgressTracker:
         for category_key, category_info in self.categories.items():
             completed_count = len(completed_problems.get(category_key, []))
             
-            # For simplicity, assume completed problems are distributed proportionally across difficulties
-            # In a real implementation, you'd want to track difficulty per problem
-            total = category_info["total"]
-            easy_total = category_info["easy"]
-            medium_total = category_info["medium"] 
-            hard_total = category_info["hard"]
-            
-            # Proportional completion calculation
-            completion_rate = completed_count / total if total > 0 else 0
-            easy_completed = int(easy_total * completion_rate)
-            medium_completed = int(medium_total * completion_rate)
-            hard_completed = int(hard_total * completion_rate)
-            
             stats.append(CategoryStats(
                 name=category_info["name"],
-                total_problems=total,
-                completed_problems=completed_count,
-                easy_total=easy_total,
-                medium_total=medium_total,
-                hard_total=hard_total,
-                easy_completed=easy_completed,
-                medium_completed=medium_completed,
-                hard_completed=hard_completed
+                total_problems=category_info["total"],
+                completed_problems=completed_count
             ))
         
         return stats
@@ -101,6 +70,10 @@ class ProgressTracker:
         else:
             return "🚧"
 
+    def get_progress_percentage(self, completed: int, total: int) -> int:
+        """Calculate completion percentage"""
+        return int((completed / total) * 100) if total > 0 else 0
+
     def update_sql50_readme(self, stats: List[CategoryStats]):
         """Update SQL50/README.md with current progress"""
         sql50_readme_path = self.sql50_path / "README.md"
@@ -112,66 +85,36 @@ class ProgressTracker:
         # Calculate totals
         total_problems = sum(stat.total_problems for stat in stats)
         total_completed = sum(stat.completed_problems for stat in stats)
-        total_easy = sum(stat.easy_total for stat in stats)
-        total_medium = sum(stat.medium_total for stat in stats) 
-        total_hard = sum(stat.hard_total for stat in stats)
-        total_easy_completed = sum(stat.easy_completed for stat in stats)
-        total_medium_completed = sum(stat.medium_completed for stat in stats)
-        total_hard_completed = sum(stat.hard_completed for stat in stats)
-        
-        progress_percentage = int((total_completed / total_problems) * 100) if total_problems > 0 else 0
-        easy_progress = int((total_easy_completed / total_easy) * 100) if total_easy > 0 else 0
-        medium_progress = int((total_medium_completed / total_medium) * 100) if total_medium > 0 else 0
-        hard_progress = int((total_hard_completed / total_hard) * 100) if total_hard > 0 else 0
+        progress_percentage = self.get_progress_percentage(total_completed, total_problems)
 
         # Read current content
         with open(sql50_readme_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # Update Progress Overview section
+        # Create new Progress Overview section
         progress_section = f"""## 📊 Progress Overview
 
 **Total Progress: {total_completed}/{total_problems} problems ({progress_percentage}%)**
 
-| Difficulty | Count | Completed | Progress |
-|-----------|-------|-----------|----------|
-| Easy | {total_easy} | {total_easy_completed} | {easy_progress}% |
-| Medium | {total_medium} | {total_medium_completed} | {medium_progress}% |
-| Hard | {total_hard} | {total_hard_completed} | {hard_progress}% |"""
+## 🗂️ Categories
 
-        # Update Categories section
-        categories_section = "## 🗂️ Categories\n\n| # | Category | Problems | Status | Difficulty Split |\n|---|----------|----------|--------|------------------|\n"
+| # | Category | Problems | Status | Progress |
+|---|----------|----------|--------|----------|"""
         
         for i, stat in enumerate(stats, 1):
             status_emoji = self.get_status_emoji(stat.completed_problems, stat.total_problems)
             status_text = f"{status_emoji} {stat.completed_problems}/{stat.total_problems}"
+            progress_percent = self.get_progress_percentage(stat.completed_problems, stat.total_problems)
             
-            difficulty_parts = []
-            if stat.easy_total > 0:
-                difficulty_parts.append(f"{stat.easy_total} Easy")
-            if stat.medium_total > 0:
-                difficulty_parts.append(f"{stat.medium_total} Medium")
-            if stat.hard_total > 0:
-                difficulty_parts.append(f"{stat.hard_total} Hard")
-            
-            difficulty_split = ", ".join(difficulty_parts)
-            
-            categories_section += f"| {i} | [{stat.name}](#{str(i).zfill(2)}-{stat.name.lower().replace(' ', '-')}) | {stat.total_problems} | {status_text} | {difficulty_split} |\n"
+            # Create proper anchor links
+            category_anchor = stat.name.lower().replace(' ', '-').replace('&', 'and')
+            progress_section += f"\n| {i} | [{stat.name}](#{str(i).zfill(2)}-{category_anchor}) | {stat.total_problems} | {status_text} | {progress_percent}% |"
 
-        # Replace sections in content
-        content = re.sub(
-            r'## 📊 Progress Overview.*?(?=## 🗂️ Categories)',
-            progress_section + '\n\n',
-            content,
-            flags=re.DOTALL
-        )
+        # Find and replace the entire section from Progress Overview to the --- separator
+        pattern = r'## 📊 Progress Overview.*?(?=---|\n## [^🗂]|\Z)'
+        replacement = progress_section + '\n\n---\n\n'
         
-        content = re.sub(
-            r'## 🗂️ Categories.*?(?=---|\n## |\Z)',
-            categories_section + '\n---\n\n',
-            content,
-            flags=re.DOTALL
-        )
+        content = re.sub(pattern, replacement, content, flags=re.DOTALL)
 
         # Write updated content
         with open(sql50_readme_path, 'w', encoding='utf-8') as f:
@@ -190,22 +133,28 @@ class ProgressTracker:
         # Calculate SQL50 totals
         sql50_total = sum(stat.total_problems for stat in stats)
         sql50_completed = sum(stat.completed_problems for stat in stats)
-        sql50_progress = int((sql50_completed / sql50_total) * 100) if sql50_total > 0 else 0
+        sql50_progress = self.get_progress_percentage(sql50_completed, sql50_total)
 
         # Read current content
         with open(main_readme_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # Update SQL50 progress in the table
-        pattern = r'(\|\s*\[\*\*SQL50\*\*\]\(\.\/SQL50\/\)\s*\|\s*)\d+(\s*\|\s*[^|]*\s*\|\s*)![Progress](https://img\.shields\.io/badge/Progress-\d+%25-[^)]+)(\s*\|[^|]*\|)'
-        replacement = rf'\g<1>{sql50_total}\g<2>![Progress](https://img.shields.io/badge/Progress-{sql50_progress}%25-{"green" if sql50_progress >= 50 else "yellow" if sql50_progress >= 25 else "red"})\g<3>'
+        # Update the "Database & SQL Engineering" table section
+        # Pattern to match the entire table row for SQL50
+        sql50_pattern = r'(\|\s*\[?\*?\*?SQL50\*?\*?\]?\([^)]*\)\s*\|\s*)\d+(\s*\|\s*[^|]*\s*\|\s*)![Progress]\([^)]+\)(\s*\|\s*[^|]*\s*\|)'
+        sql50_replacement = f'\\g<1>{sql50_total}\\g<2>![Progress](https://img.shields.io/badge/Progress-{sql50_progress}%25-{"green" if sql50_progress >= 50 else "yellow" if sql50_progress >= 25 else "red"})\\g<3>'
         
-        content = re.sub(pattern, replacement, content)
+        content = re.sub(sql50_pattern, sql50_replacement, content)
 
-        # Update total progress line
-        total_pattern = r'\*\*Total Progress: \d+/\d+ problems \(\d+%\)'
-        total_replacement = f'**Total Progress: {sql50_completed}/{sql50_total} problems ({sql50_progress}%)'
-        content = re.sub(total_pattern, total_replacement, content)
+        # Update "Current Progress" section if it exists
+        current_progress_pattern = r'(\*\*Total Progress: )\d+/\d+ problems \(\d+%\)'
+        current_progress_replacement = f'\\g<1>{sql50_completed}/{sql50_total} problems ({sql50_progress}%)'
+        content = re.sub(current_progress_pattern, current_progress_replacement, content)
+
+        # Also try to update the progress tracking line in the repository
+        repo_progress_pattern = r'(\*\*Total Progress: )\d+/50 problems \(\d+%\)'
+        repo_progress_replacement = f'\\g<1>{sql50_completed}/{sql50_total} problems ({sql50_progress}%)'
+        content = re.sub(repo_progress_pattern, repo_progress_replacement, content)
 
         # Write updated content
         with open(main_readme_path, 'w', encoding='utf-8') as f:
@@ -237,12 +186,19 @@ class ProgressTracker:
         # Summary
         total_completed = sum(stat.completed_problems for stat in stats)
         total_problems = sum(stat.total_problems for stat in stats)
-        progress_percentage = int((total_completed / total_problems) * 100) if total_problems > 0 else 0
+        progress_percentage = self.get_progress_percentage(total_completed, total_problems)
         
         print(f"\n🎯 Summary:")
         print(f"   Total progress: {total_completed}/{total_problems} ({progress_percentage}%)")
         print(f"   Categories with progress: {len([s for s in stats if s.completed_problems > 0])}/7")
         print(f"   Completed categories: {len([s for s in stats if s.completed_problems == s.total_problems])}/7")
+        
+        # Show detailed breakdown
+        print(f"\n📈 Detailed Breakdown:")
+        for stat in stats:
+            status = "✅" if stat.completed_problems == stat.total_problems else "🚧" if stat.completed_problems > 0 else "⏳"
+            percentage = self.get_progress_percentage(stat.completed_problems, stat.total_problems)
+            print(f"   {status} {stat.name}: {stat.completed_problems}/{stat.total_problems} ({percentage}%)")
 
 if __name__ == "__main__":
     try:
