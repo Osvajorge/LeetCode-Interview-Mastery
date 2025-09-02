@@ -1,226 +1,166 @@
 #!/usr/bin/env python3
 """
-Auto-update progress statistics across all README files in the repository.
-This script scans the SQL50 directory structure and updates:
-1. Main README.md - Overall progress and badges
-2. SQL50/README.md - Category breakdown and totals
-
+Script to automatically update progress in SQL50 README.md
 Usage: python update_progress.py
 """
 
 import os
 import re
 from pathlib import Path
-from typing import Dict, Tuple
 
-def scan_problems() -> Dict[str, Dict[str, int]]:
-    """
-    Scan the SQL50 directory to count problems in each category.
-    Returns a dictionary with category info and problem counts.
-    """
+# Official SQL50 structure
+SQL50_CATEGORIES = {
+    "01-Select": 5,
+    "02-Basic-Joins": 8, 
+    "03-Basic-Aggregate-Functions": 8,
+    "04-Sorting-and-Grouping": 7,
+    "05-Advanced-Select-and-Joins": 7,
+    "06-Subqueries": 7,
+    "07-Advanced-String-Functions": 8
+}
+
+def count_completed_problems():
+    """Count completed problems by checking existing folders with solutions."""
     sql50_path = Path("SQL50")
     if not sql50_path.exists():
-        print("❌ SQL50 directory not found!")
+        print("❌ SQL50 folder not found!")
         return {}
     
-    categories = {
-        "01-Select": {"name": "Select", "total": 5},
-        "02-Basic-Joins": {"name": "Basic Joins", "total": 6},
-        "03-Basic-Aggregate-Functions": {"name": "Aggregate Functions", "total": 7},
-        "04-Sorting-and-Grouping": {"name": "Sorting & Grouping", "total": 5},
-        "05-Advanced-Select-and-Joins": {"name": "Advanced Joins", "total": 12},
-        "06-Subqueries": {"name": "Subqueries", "total": 8},
-        "07-Advanced-String-Functions": {"name": "String Functions", "total": 7}
-    }
+    category_progress = {}
     
-    results = {}
-    total_completed = 0
-    total_problems = 50
-    
-    print("🔍 Scanning SQL50 directory structure...")
-    
-    for category_dir, category_info in categories.items():
-        category_path = sql50_path / category_dir
+    for category, total_problems in SQL50_CATEGORIES.items():
+        category_path = sql50_path / category
         completed = 0
         
         if category_path.exists():
-            # Count problem directories (exclude __pycache__ and other non-problem dirs)
-            problem_dirs = [d for d in category_path.iterdir() 
-                          if d.is_dir() and not d.name.startswith('__')]
-            completed = len(problem_dirs)
-            
-            print(f"  📁 {category_info['name']}: {completed}/{category_info['total']} problems")
+            print(f"🔍 Checking {category}...")
+            # Count folders that exist (regardless of solution content for now)
+            for folder in category_path.iterdir():
+                if folder.is_dir():
+                    print(f"  📁 Found: {folder.name}")
+                    solution_file = folder / "solution.sql"
+                    if solution_file.exists():
+                        print(f"    ✅ Has solution.sql")
+                        completed += 1
+                    else:
+                        print(f"    ❌ Missing solution.sql")
         else:
-            print(f"  📁 {category_info['name']}: 0/{category_info['total']} problems (directory not found)")
+            print(f"❌ Category folder {category} not found")
         
-        results[category_dir] = {
-            "name": category_info["name"],
-            "completed": completed,
-            "total": category_info["total"]
-        }
-        total_completed += completed
+        category_progress[category] = (completed, total_problems)
+        print(f"📊 {category}: {completed}/{total_problems}")
     
-    results["_totals"] = {
-        "completed": total_completed,
-        "total": total_problems,
-        "percentage": round((total_completed / total_problems) * 100)
-    }
-    
-    print(f"\n📊 Total Progress: {total_completed}/{total_problems} ({results['_totals']['percentage']}%)")
-    return results
+    return category_progress
 
-def get_progress_color(percentage: int) -> str:
-    """Return appropriate color for progress badge based on percentage."""
-    if percentage >= 80:
-        return "green"
-    elif percentage >= 60:
-        return "yellow"
-    elif percentage >= 30:
-        return "orange"
+def determine_status(completed: int, total: int) -> str:
+    """Determine status emoji and text based on completion."""
+    if completed == total:
+        return f"✅ {completed}/{total}"
+    elif completed > 0:
+        return f"🚧 {completed}/{total}"
     else:
-        return "red"
+        return f"⏳ {completed}/{total}"
 
-def update_main_readme(progress_data: Dict) -> bool:
-    """Update the main README.md with current progress statistics."""
-    readme_path = Path("README.md")
-    if not readme_path.exists():
-        print("❌ Main README.md not found!")
-        return False
-    
-    with open(readme_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-    
-    totals = progress_data["_totals"]
-    
-    # Update progress badge
-    progress_color = get_progress_color(totals["percentage"])
-    new_progress_badge = f'![Progress](https://img.shields.io/badge/Progress-{totals["percentage"]}%25-{progress_color})'
-    content = re.sub(
-        r'!\[Progress\]\(https://img\.shields\.io/badge/Progress-\d+%25-\w+\)',
-        new_progress_badge,
-        content
-    )
-    
-    # Update total progress text
-    new_progress_text = f'**Total Progress: {totals["completed"]}/{totals["total"]} problems ({totals["percentage"]}%)** 🎯'
-    content = re.sub(
-        r'\*\*Total Progress: \d+/\d+ problems \(\d+%\)\*\* 🎯[^*]*',
-        new_progress_text + ' *Building momentum!*' if totals["percentage"] < 50 else new_progress_text + ' *Great progress!*',
-        content
-    )
-    
-    with open(readme_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    
-    print(f"✅ Updated main README.md - {totals['percentage']}% progress")
-    return True
-
-def update_sql50_readme(progress_data: Dict) -> bool:
-    """Update the SQL50/README.md with category breakdown."""
+def update_readme_progress(category_progress: dict):
+    """Update the SQL50 README.md with current progress."""
     readme_path = Path("SQL50/README.md")
+    
     if not readme_path.exists():
         print("❌ SQL50/README.md not found!")
-        return False
-    
-    with open(readme_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-    
-    # Build the new table with proper formatting
-    table_header = "| # | Category | Problems | Status |\n|---|----------|----------|--------|"
-    table_rows = [table_header]
-    
-    # Ensure we process categories in the right order
-    category_order = [
-        ("01-Select", "Select"),
-        ("02-Basic-Joins", "Basic Joins"), 
-        ("03-Basic-Aggregate-Functions", "Aggregate Functions"),
-        ("04-Sorting-and-Grouping", "Sorting & Grouping"),
-        ("05-Advanced-Select-and-Joins", "Advanced Joins"),
-        ("06-Subqueries", "Subqueries"),
-        ("07-Advanced-String-Functions", "String Functions")
-    ]
-    
-    for i, (category_dir, display_name) in enumerate(category_order, 1):
-        if category_dir in progress_data:
-            data = progress_data[category_dir]
-            category_link = f"[{display_name}](./{category_dir}/)"
-            status = f"{data['completed']}/{data['total']}"
-            table_rows.append(f"| {i} | {category_link} | {data['total']} | {status} |")
-    
-    new_table = "\n".join(table_rows)
-    
-    # Replace the entire table section more precisely  
-    # Look for the table start and replace until the Progress section
-    table_start = "| # | Category | Problems | Status |"
-    progress_start = "## Progress:"
-    
-    # Find table start and progress start positions
-    table_start_pos = content.find(table_start)
-    progress_start_pos = content.find(progress_start)
-    
-    if table_start_pos != -1 and progress_start_pos != -1:
-        # Replace the table section
-        before_table = content[:table_start_pos]
-        after_progress = content[progress_start_pos:]
-        content = before_table + new_table + "\n\n" + after_progress
-    else:
-        print("⚠️  Could not find table boundaries in SQL50/README.md")
-    
-    # Update progress summary
-    totals = progress_data["_totals"]
-    progress_color = get_progress_color(totals["percentage"])
-    new_progress = f'## Progress: {totals["completed"]}/{totals["total"]} ![Progress](https://img.shields.io/badge/Progress-{totals["percentage"]}%25-{progress_color})'
-    
-    content = re.sub(
-        r'## Progress: \d+/\d+ !\[Progress\]\([^)]+\)',
-        new_progress,
-        content
-    )
-    
-    with open(readme_path, 'w', encoding='utf-8') as f:
-        f.write(content)
-    
-    print(f"✅ Updated SQL50/README.md - Category breakdown refreshed")
-    return True
-
-def main():
-    """Main function to update all progress statistics."""
-    print("🚀 Auto-updating repository progress...")
-    print("=" * 50)
-    
-    # Scan current progress
-    progress_data = scan_problems()
-    if not progress_data:
-        print("❌ Failed to scan problems")
         return
     
-    print("\n📝 Updating README files...")
+    # Read current README
+    with open(readme_path, "r", encoding="utf-8") as f:
+        content = f.read()
     
-    # Update main README
-    main_updated = update_main_readme(progress_data)
+    # Calculate totals
+    total_completed = sum(completed for completed, _ in category_progress.values())
+    total_problems = sum(total for _, total in category_progress.values())
+    total_percentage = int((total_completed / total_problems) * 100) if total_problems > 0 else 0
     
-    # Update SQL50 README
-    sql50_updated = update_sql50_readme(progress_data)
+    # Update progress overview
+    progress_pattern = r"(\*\*Total Progress: )\d+/\d+ problems \(\d+%\)(\*\*)"
+    new_progress = f"\\g<1>{total_completed}/{total_problems} problems ({total_percentage}%)\\g<2>"
+    content = re.sub(progress_pattern, new_progress, content)
     
-    # Summary
-    print("\n" + "=" * 50)
-    if main_updated and sql50_updated:
-        totals = progress_data["_totals"]
-        print(f"✅ All README files updated successfully!")
-        print(f"📈 Current progress: {totals['completed']}/{totals['total']} ({totals['percentage']}%)")
-        print(f"🎯 Keep going! You're doing great!")
+    # Count by difficulty (simplified estimation)
+    easy_completed = min(total_completed, 33)  # Most problems are easy
+    medium_completed = max(0, total_completed - 33)
+    
+    # Update difficulty breakdown
+    easy_pattern = r"(\| Easy \| 33 \| )\d+( \| \d+% \|)"
+    content = re.sub(easy_pattern, f"\\g<1>{easy_completed}\\g<2>", content)
+    
+    medium_pattern = r"(\| Medium \| 16 \| )\d+( \| \d+% \|)"
+    content = re.sub(medium_pattern, f"\\g<1>{medium_completed}\\g<2>", content)
+    
+    # Update category table
+    for category, (completed, total) in category_progress.items():
+        status = determine_status(completed, total)
+        category_number = category.split('-')[0]
         
-        # Motivational messages based on progress
-        if totals["percentage"] >= 80:
-            print("🏆 Amazing! You're almost done with SQL50!")
-        elif totals["percentage"] >= 50:
-            print("💪 Great momentum! You're past the halfway mark!")
-        elif totals["percentage"] >= 25:
-            print("🔥 Solid progress! Keep building that SQL mastery!")
+        # Pattern to match the category row
+        pattern = rf"(\| {category_number} \| \[.*?\] \| {total} \| ).*?( \| .*? \|)"
+        replacement = f"\\g<1>{status}\\g<2>"
+        content = re.sub(pattern, replacement, content)
+    
+    # Update current focus based on progress
+    current_category = None
+    for category, (completed, total) in category_progress.items():
+        if 0 < completed < total:  # In progress
+            current_category = category
+            break
+    
+    if current_category:
+        completed, total = category_progress[current_category]
+        category_name = current_category.split('-', 1)[1].replace('-', ' ')
+        
+        # Different messages based on completion percentage
+        if completed / total >= 0.8:
+            focus_text = f"**Current Focus: Complete {category_name} category ({completed}/{total} done) - Almost there!**"
+        elif completed / total >= 0.5:
+            focus_text = f"**Current Focus: Continue with {category_name} category ({completed}/{total} done) - Making good progress!**"
         else:
-            print("🌱 Every expert was once a beginner. You've got this!")
-    else:
-        print("⚠️  Some updates failed. Check the errors above.")
+            focus_text = f"**Current Focus: Work on {category_name} category ({completed}/{total} done) - Getting started!**"
+        
+        focus_pattern = r"\*\*Current Focus:.*?\*\*"
+        content = re.sub(focus_pattern, focus_text, content)
+    
+    # Write updated content
+    with open(readme_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    
+    print(f"✅ Updated SQL50/README.md")
+    print(f"📊 Total Progress: {total_completed}/{total_problems} ({total_percentage}%)")
+    
+    # Show category breakdown
+    print("\n📂 Category Progress:")
+    for category, (completed, total) in category_progress.items():
+        status_emoji = "✅" if completed == total else "🚧" if completed > 0 else "⏳"
+        category_name = category.split('-', 1)[1].replace('-', ' ')
+        print(f"  {status_emoji} {category_name}: {completed}/{total}")
+
+def main():
+    """Main function to update progress."""
+    print("🔄 Updating SQL50 progress...")
+    
+    # Count completed problems
+    category_progress = count_completed_problems()
+    
+    if not category_progress:
+        print("❌ No progress data found!")
+        return
+    
+    # Update README
+    update_readme_progress(category_progress)
+    
+    print("\n🎯 Next Steps:")
+    for category, (completed, total) in category_progress.items():
+        if 0 < completed < total:
+            category_name = category.split('-', 1)[1].replace('-', ' ')
+            remaining = total - completed
+            print(f"  - Complete {remaining} more problems in {category_name}")
+            break
 
 if __name__ == "__main__":
     main()
