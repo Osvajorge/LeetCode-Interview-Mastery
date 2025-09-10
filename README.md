@@ -21,7 +21,7 @@ This repository contains **comprehensive solutions** to coding interview problem
 ### 🗃️ **Database & SQL Engineering**
 | Collection | Problems | Difficulty | Progress | Focus Area |
 |-----------|----------|------------|----------|------------|
-| [**SQL50**](./SQL50/) | 50 | Easy-Hard | ![Progress](https://img.shields.io/badge/Progress-32%25-yellow) | Database Design, Query Optimization |
+| [**SQL50**](./SQL50/) | 50 | Easy-Hard | ![Progress](https://img.shields.io/badge/Progress-34%25-yellow) | Database Design, Query Optimization |
 
 ### 🧮 **Coming Soon: Algorithms & Data Structures**  
 | Collection | Problems | Difficulty | Status | Focus Area |
