@@ -4,7 +4,7 @@ Complete collection of essential SQL problems for interview preparation, organiz
 
 ## 📊 Progress Overview
 
-**Total Progress: 23/50 problems (46%)**
+**Total Progress: 24/50 problems (48%)**
 
 ## 🗂️ Categories
 
@@ -13,7 +13,7 @@ Complete collection of essential SQL problems for interview preparation, organiz
 | 1 | [Select](#01-select) | 5 | ✅ 5/5 | 100% |
 | 2 | [Basic Joins](#02-basic-joins) | 9 | ✅ 9/9 | 100% |
 | 3 | [Basic Aggregate Functions](#03-basic-aggregate-functions) | 8 | ✅ 8/8 | 100% |
-| 4 | [Sorting and Grouping](#04-sorting-and-grouping) | 7 | 🚧 1/7 | 14% |
+| 4 | [Sorting and Grouping](#04-sorting-and-grouping) | 7 | 🚧 2/7 | 28% |
 | 5 | [Advanced Select and Joins](#05-advanced-select-and-joins) | 7 | ⏳ 0/7 | 0% |
 | 6 | [Subqueries](#06-subqueries) | 7 | ⏳ 0/7 | 0% |
 | 7 | [Advanced String Functions](#07-advanced-string-functions) | 7 | ⏳ 0/7 | 0% |## 📚 Solution Structure
