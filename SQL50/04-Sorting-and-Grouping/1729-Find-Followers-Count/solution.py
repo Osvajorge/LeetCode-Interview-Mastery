@@ -6,6 +6,7 @@ def count_followers(followers: pd.DataFrame) -> pd.DataFrame:
         .groupby('user_id')['follower_id']
         .count()
         .reset_index(name='followers_count')
+        .sort_values(by='user_id')
         )
 
     return follower_counts
